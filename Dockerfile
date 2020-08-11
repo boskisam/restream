@@ -5,6 +5,8 @@ LABEL maintainer="Sebastian Ramirez <tiangolo@gmail.com>"
 # Versions of Nginx and nginx-rtmp-module to use
 ENV NGINX_VERSION nginx-1.15.0
 ENV NGINX_RTMP_MODULE_VERSION 1.2.1
+ENV YOUTUBE_KEY=default FACEBOOK_KEY=default
+
 
 # Install dependencies
 RUN apt-get update && \
@@ -59,11 +61,16 @@ COPY services /etc/services
 COPY stunnel4 /etc/default/stunnel4
 COPY stunnel.conf /etc/stunnel/stunnel.conf
 
-# setup stunnel for restart
-#RUN service stunnel4 restart
 
-# Set up config file
+# Set up config filed
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 1935 1936
+# Set up stream keys
+RUN sed -i 's/ytkey/'"${YOUTUBE_KEY}"'/g' /etc/nginx/nginx.conf &&\
+    sed -i 's/fbkey/'"${FACEBOOK_KEY}"'/g' /etc/nginx/nginx.conf
+
+# setup stunnel for restart
+RUN service stunnel4 restart
+
+EXPOSE 1935
 CMD ["nginx", "-g", "daemon off;"]
