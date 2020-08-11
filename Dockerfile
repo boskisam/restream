@@ -10,7 +10,7 @@ ENV YOUTUBE_KEY=default FACEBOOK_KEY=default
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y ca-certificates openssl libssl-dev && \
+    apt-get install -y ca-certificates openssl libssl-dev gettext-base && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and decompress Nginx
@@ -63,14 +63,16 @@ COPY stunnel.conf /etc/stunnel/stunnel.conf
 
 
 # Set up config filed
-COPY nginx.conf /etc/nginx/nginx.conf
-
+COPY nginx.conf /etc/nginx/nginx.conf.temp
+RUN mkdir /tmp/script
+COPY script.sh /tmp/script/script.sh
+RUN chmod +x /tmp/script/script.sh
 # Set up stream keys
-RUN sed -i 's/ytkey/'"${YOUTUBE_KEY}"'/g' /etc/nginx/nginx.conf &&\
-    sed -i 's/fbkey/'"${FACEBOOK_KEY}"'/g' /etc/nginx/nginx.conf
+#RUN sed -i 's/ytkey/'"${YOUTUBE_KEY}"'/g' /etc/nginx/nginx.conf &&\
+#    sed -i 's/fbkey/'"${FACEBOOK_KEY}"'/g' /etc/nginx/nginx.conf
 
 # setup stunnel for restart
 RUN service stunnel4 restart
 
 EXPOSE 1935
-CMD ["nginx", "-g", "daemon off;"]
+CMD /tmp/script/script.sh
