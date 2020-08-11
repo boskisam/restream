@@ -1,11 +1,11 @@
 FROM buildpack-deps:stretch
 
-LABEL maintainer="Sebastian Ramirez <tiangolo@gmail.com>"
+LABEL maintainer="Samuel Bubienko <sam@spoleczne.it>"
 
 # Versions of Nginx and nginx-rtmp-module to use
 ENV NGINX_VERSION nginx-1.15.0
 ENV NGINX_RTMP_MODULE_VERSION 1.2.1
-ENV YOUTUBE_KEY=default FACEBOOK_KEY=default
+ENV YOUTUBE_KEY="" FACEBOOK_KEY=""
 
 
 # Install dependencies
@@ -53,26 +53,18 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 
 # Setup Facebook encryption
 RUN apt-get update &&\
-    apt-get upgrade -y &&\
     apt-get install stunnel4 -y
 
-# Copy config for stunnel4
+# Copy config for stunnel4 and nginx
 COPY services /etc/services
 COPY stunnel4 /etc/default/stunnel4
 COPY stunnel.conf /etc/stunnel/stunnel.conf
-
-
-# Set up config filed
 COPY nginx.conf /etc/nginx/nginx.conf.temp
+
+# COPY startcript file
 RUN mkdir /tmp/script
 COPY script.sh /tmp/script/script.sh
 RUN chmod +x /tmp/script/script.sh
-# Set up stream keys
-#RUN sed -i 's/ytkey/'"${YOUTUBE_KEY}"'/g' /etc/nginx/nginx.conf &&\
-#    sed -i 's/fbkey/'"${FACEBOOK_KEY}"'/g' /etc/nginx/nginx.conf
-
-# setup stunnel for restart
-RUN service stunnel4 restart
 
 EXPOSE 1935
 CMD /tmp/script/script.sh
