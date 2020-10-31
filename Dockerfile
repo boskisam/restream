@@ -58,7 +58,7 @@ FROM alpine:3.12
 LABEL MAINTAINER Samuel Bubienko <sam@spoleczne.it>
 
 # set keys env
-ENV YOUTUBE_KEY="" FACEBOOK_KEY=""
+ENV YOUTUBE_KEY="" FACEBOOK_KEY="" RTMP_STREAM=""
 
 RUN apk add --update \
     ca-certificates \
