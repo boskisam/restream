@@ -58,7 +58,7 @@ FROM alpine:3.12
 LABEL MAINTAINER Samuel Bubienko <sam@spoleczne.it>
 
 # set keys env
-ENV YOUTUBE_KEY="" FACEBOOK_KEY="" RTMP_STREAM=""
+ENV YOUTUBE_KEY="" FACEBOOK_KEY="" RTMP_STREAM="127.0.0.1:1936" RECORD="off"
 
 RUN apk add --update \
     ca-certificates \
@@ -82,7 +82,9 @@ RUN mkdir /var/log/stunnel && \
     touch /var/log/stunnel/stunnel.log &&\
     chown -R stunnel:stunnel /var/log/stunnel/stunnel.log &&\
     mkdir /var/run/stunnel &&\
-    chown stunnel:stunnel /var/run/stunnel
+    chown stunnel:stunnel /var/run/stunnel &&\
+    mkdir /tmp/rec &&\
+    chown nobody:nobody /tmp/rec
 
 
 EXPOSE 1935
